@@ -3,490 +3,476 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FAZ DOWNLOADER | Hyper-Downloader</title>
+    <title>FAZ DOWNLOADER | Celestial Downloader</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Manrope:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon-tk: #00f2ea;
-            --neon-tk-sec: #ff0050;
-            --neon-yt: #ff0000;
-            --neon-yt-sec: #ffadad;
-            
-            --primary: var(--neon-tk);
-            --secondary: var(--neon-tk-sec);
-            
-            --bg-dark: #030305;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-            --surface: #0a0a0c;
+            --primary: #00f2ea;
+            --accent: #ff0050;
+            --bg-deep: #050505;
+            --glass-surface: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glow: 0 0 20px rgba(0, 242, 234, 0.3);
+            --text-main: #ffffff;
+            --text-muted: #888888;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background: var(--bg-dark);
-            color: white;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
-            perspective: 1000px; /* For 3D Tilt */
-        }
-
-        /* --- QUANTUM BACKGROUND --- */
-        .ambient-orb {
-            position: fixed; top: 50%; left: 50%; width: 800px; height: 800px;
-            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            filter: blur(120px); opacity: 0.15;
-            animation: pulse 8s infinite alternate;
-            z-index: -2; transition: background 0.8s;
-        }
-        .grid-floor {
-            position: fixed; bottom: -50%; left: -50%; width: 200%; height: 100%;
-            background-image: linear-gradient(var(--border) 1px, transparent 1px),
-                              linear-gradient(90deg, var(--border) 1px, transparent 1px);
-            background-size: 50px 50px;
-            transform: rotateX(60deg);
-            mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, transparent 100%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        @keyframes pulse { 0% { opacity: 0.1; transform: translate(-50%, -50%) scale(0.8); } 100% { opacity: 0.2; transform: translate(-50%, -50%) scale(1.1); } }
-
-        /* --- 3D CARD CONTAINER --- */
-        .quantum-shell {
-            width: 100%; max-width: 550px; padding: 20px;
-            transform-style: preserve-3d;
-            transition: transform 0.1s;
-        }
-
-        .main-interface {
-            background: rgba(10, 10, 12, 0.7);
-            backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
-            border: 1px solid var(--border);
-            border-radius: 32px;
-            padding: 30px;
-            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.05);
+            overflow: hidden;
             position: relative;
+        }
+
+        /* --- AURORA ENGINE --- */
+        .aurora-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            background: black;
             overflow: hidden;
         }
+        .aurora-blob {
+            position: absolute; width: 60vw; height: 60vw; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            filter: blur(100px); opacity: 0.4;
+            animation: morph 15s infinite linear alternate;
+        }
+        .blob-1 { top: -10%; left: -10%; background: radial-gradient(circle, #4f46e5, transparent); animation-delay: 0s; }
+        .blob-2 { bottom: -10%; right: -10%; background: radial-gradient(circle, #ec4899, transparent); animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 40%; width: 40vw; height: 40vw; background: radial-gradient(circle, #06b6d4, transparent); animation-delay: -10s; opacity: 0.2; }
 
-        /* --- HEADER & TABS --- */
-        .hud-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
+        @keyframes morph { 0% { transform: rotate(0deg) scale(1); } 100% { transform: rotate(360deg) scale(1.2); } }
+
+        /* --- NOISE TEXTURE --- */
+        .film-grain {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0;
         }
-        .brand { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 28px; text-transform: uppercase; letter-spacing: 2px; }
-        .brand span { color: var(--primary); text-shadow: 0 0 15px var(--primary); transition: 0.3s; }
+
+        /* --- MAIN INTERFACE --- */
+        .omega-shell {
+            width: 100%; max-width: 500px; padding: 20px; z-index: 10;
+            perspective: 1000px;
+        }
+
+        .omega-card {
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 30px;
+            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative; overflow: hidden;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* --- NEURAL CORE (Status Ring) --- */
+        .neural-wrapper {
+            display: flex; justify-content: center; margin-bottom: 25px;
+        }
+        .neural-core {
+            width: 70px; height: 70px; border-radius: 50%;
+            border: 2px solid var(--glass-border);
+            position: relative; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            transition: 0.5s;
+        }
+        .neural-core::after {
+            content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            border: 2px solid transparent; border-top-color: var(--primary);
+            animation: spin 2s linear infinite; opacity: 0; transition: 0.3s;
+        }
+        .neural-core.processing::after { opacity: 1; }
+        .neural-core.success { border-color: #10b981; box-shadow: 0 0 20px #10b981; }
+        .neural-core.error { border-color: #ef4444; box-shadow: 0 0 20px #ef4444; }
         
-        .mode-toggles {
-            display: flex; background: rgba(0,0,0,0.5); padding: 4px; border-radius: 50px; border: 1px solid var(--border);
-        }
-        .mode-chip {
-            padding: 8px 16px; border-radius: 40px; font-size: 12px; font-weight: 600; cursor: pointer;
-            color: #888; transition: 0.3s; display: flex; align-items: center; gap: 6px;
-        }
-        .mode-chip.active { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
+        .core-icon { font-size: 24px; color: var(--text-main); transition: 0.3s; }
+        
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- HEADINGS --- */
+        .header { text-align: center; margin-bottom: 30px; }
+        .title { font-family: 'Syncopate', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: 2px; margin-bottom: 5px; }
+        .subtitle { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; }
 
         /* --- INPUT FIELD --- */
-        .input-zone { position: relative; margin-bottom: 25px; }
-        .quantum-input {
-            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-            padding: 18px 50px 18px 20px; border-radius: 16px;
-            color: white; font-family: 'Rajdhani', sans-serif; font-size: 16px; letter-spacing: 1px;
+        .input-matrix { position: relative; margin-bottom: 20px; }
+        .omega-input {
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);
+            padding: 20px 50px 20px 20px; border-radius: 20px;
+            color: white; font-size: 14px; letter-spacing: 0.5px;
             outline: none; transition: 0.3s;
         }
-        .quantum-input:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .paste-trigger {
-            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-            width: 36px; height: 36px; border-radius: 10px; border: none;
-            background: rgba(255,255,255,0.08); color: white; cursor: pointer;
-            transition: 0.2s;
-        }
-        .paste-trigger:hover { background: var(--primary); color: black; }
-
-        /* --- ACTION BUTTON --- */
-        .initiate-btn {
-            width: 100%; padding: 20px; border-radius: 16px; border: none;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 3px;
-            cursor: pointer; position: relative; overflow: hidden;
-            box-shadow: 0 10px 40px -10px var(--primary);
-            transition: 0.3s; text-transform: uppercase;
-        }
-        .initiate-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 50px -10px var(--primary); }
-        .initiate-btn:active { transform: scale(0.98); }
-
-        /* --- TERMINAL LOGGER (Loader) --- */
-        .terminal-log {
-            display: none; background: #000; border-radius: 12px; padding: 15px; margin-top: 20px;
-            font-family: 'Courier New', monospace; font-size: 12px; color: var(--primary);
-            border: 1px solid var(--border);
-        }
-        .log-line { margin-bottom: 5px; opacity: 0; animation: fadeIn 0.3s forwards; }
-        .log-line span { color: white; }
-
-        /* --- RESULT DASHBOARD --- */
-        .result-viewport { display: none; margin-top: 30px; animation: holoPop 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        .omega-input:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); background: rgba(0,0,0,0.6); }
         
-        .media-monitor {
-            background: rgba(0,0,0,0.5); border-radius: 20px; overflow: hidden; border: 1px solid var(--border);
+        .mode-indicator {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            font-size: 18px; color: var(--text-muted); transition: 0.3s;
+        }
+        .mode-indicator.active-tt { color: #00f2ea; filter: drop-shadow(0 0 5px #00f2ea); }
+        .mode-indicator.active-yt { color: #ff0000; filter: drop-shadow(0 0 5px #ff0000); }
+
+        /* --- HOLOGRAPHIC BUTTON --- */
+        .omega-btn {
+            width: 100%; padding: 22px; border-radius: 20px; border: none;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 1px solid var(--glass-border);
+            color: white; font-family: 'Syncopate', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 2px;
+            cursor: pointer; position: relative; overflow: hidden;
+            transition: 0.3s;
+        }
+        .omega-btn:hover { background: rgba(255,255,255,0.15); border-color: white; letter-spacing: 3px; }
+        .omega-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .omega-btn:hover::before { left: 100%; }
+
+        /* --- RESULT PANEL --- */
+        #omega-result { display: none; margin-top: 30px; animation: hologramFade 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        
+        .holo-card {
+            background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 20px; position: relative;
+        }
+        .holo-card::before {
+            content: ''; position: absolute; inset: 0; border-radius: 24px; padding: 1px;
+            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+        }
+
+        .media-viewer {
+            width: 100%; border-radius: 16px; overflow: hidden; background: #000;
+            margin-bottom: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             position: relative;
         }
-        
-        .monitor-screen {
-            width: 100%; height: 300px; background: #000; position: relative;
-            display: flex; align-items: center; justify-content: center;
-        }
-        video { width: 100%; height: 100%; object-fit: contain; }
-        
-        .meta-overlay {
-            padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            position: absolute; bottom: 0; left: 0; width: 100%; pointer-events: none;
-        }
-        .meta-title { font-size: 14px; font-weight: 600; margin-bottom: 5px; text-shadow: 0 2px 4px black; }
-        .meta-tags { display: flex; gap: 8px; }
-        .tag { background: var(--primary); color: black; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
+        video { width: 100%; display: block; max-height: 400px; opacity: 0.8; transition: 0.3s; }
+        video:hover { opacity: 1; }
 
-        /* Download Options */
-        .control-deck { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .deck-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-            padding: 15px; border-radius: 12px; text-decoration: none; color: white;
-            text-align: center; font-size: 13px; font-weight: 600;
-            transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 5px;
-        }
-        .deck-btn i { font-size: 18px; color: var(--primary); }
-        .deck-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--primary); }
-        .deck-btn.primary { grid-column: span 2; background: var(--primary); color: black; border: none; flex-direction: row; justify-content: center; font-size: 15px; }
-        .deck-btn.primary i { color: black; }
-        .deck-btn.primary:hover { opacity: 0.9; }
+        .info-grid { display: grid; grid-template-columns: auto 1fr; gap: 15px; align-items: center; margin-bottom: 20px; }
+        .info-avatar { width: 50px; height: 50px; border-radius: 14px; border: 1px solid var(--glass-border); }
+        .info-text h3 { font-size: 14px; font-weight: 700; color: white; margin-bottom: 2px; }
+        .info-text p { font-size: 11px; color: var(--text-muted); font-family: 'Syncopate'; }
 
-        /* --- HISTORY DOCK --- */
-        .history-dock { margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px; }
-        .dock-header { display: flex; justify-content: space-between; font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
-        .clear-btn { cursor: pointer; color: var(--secondary); }
+        .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .act-btn {
+            padding: 15px; border-radius: 14px; border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.03); color: white; text-align: center;
+            text-decoration: none; font-size: 12px; font-weight: 700; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .act-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .act-btn.primary { background: white; color: black; border: none; grid-column: span 2; }
+        .act-btn.primary:hover { box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+
+        /* --- HISTORY DOTS --- */
+        .history-dots {
+            display: flex; justify-content: center; gap: 8px; margin-top: 25px;
+        }
+        .h-dot {
+            width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2);
+            cursor: pointer; transition: 0.3s;
+        }
+        .h-dot:hover { background: white; transform: scale(1.5); }
         
-        .dock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; }
-        .dock-item {
-            aspect-ratio: 1/1; border-radius: 12px; overflow: hidden; position: relative;
-            cursor: pointer; border: 1px solid var(--border); transition: 0.2s;
-        }
-        .dock-item:hover { transform: scale(1.1); border-color: var(--primary); z-index: 10; }
-        .dock-item img { width: 100%; height: 100%; object-fit: cover; }
-        .dock-badge { position: absolute; bottom: 0; right: 0; padding: 2px 4px; font-size: 8px; font-weight: bold; color: black; }
-
-        /* --- UTILS --- */
-        .toast {
-            position: fixed; top: 30px; left: 50%; transform: translate(-50%, -100px);
+        /* --- TOAST --- */
+        .omega-toast {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px);
             background: rgba(0,0,0,0.8); border: 1px solid var(--primary);
-            padding: 12px 30px; border-radius: 50px; font-weight: 600;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5); opacity: 0; transition: 0.4s;
-            z-index: 999; display: flex; gap: 10px; align-items: center;
+            color: var(--primary); padding: 10px 20px; border-radius: 4px;
+            font-family: 'Syncopate'; font-size: 10px; font-weight: 700;
+            opacity: 0; transition: 0.4s; pointer-events: none; z-index: 100;
         }
-        .toast.visible { transform: translate(-50%, 0); opacity: 1; }
+        .omega-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        @keyframes fadeIn { to { opacity: 1; } }
-        @keyframes holoPop { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes hologramFade { 0% { opacity: 0; transform: translateY(10px) scale(0.95); filter: blur(10px); } 100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
 
     </style>
 </head>
 <body>
 
-<div class="ambient-orb" id="orb"></div>
-<div class="grid-floor"></div>
+<!-- Dynamic Background -->
+<div class="aurora-bg">
+    <div class="aurora-blob blob-1"></div>
+    <div class="aurora-blob blob-2"></div>
+    <div class="aurora-blob blob-3"></div>
+</div>
+<div class="film-grain"></div>
 
-<div class="quantum-shell" id="tiltCard">
-    <div class="main-interface">
+<div class="omega-shell" id="shell">
+    <div class="omega-card">
         
-        <!-- HUD HEADER -->
-        <div class="hud-header">
-            <div class="brand">FAZ <span>DOWNLOADER</span></div>
-            <div class="mode-toggles">
-                <div class="mode-chip active" id="chip-tt" onclick="setSystem('tiktok')">
-                    <i class="fa-brands fa-tiktok"></i>
-                </div>
-                <div class="mode-chip" id="chip-yt" onclick="setSystem('youtube')">
-                    <i class="fa-brands fa-youtube"></i>
-                </div>
+        <!-- Neural Core (Status) -->
+        <div class="neural-wrapper">
+            <div class="neural-core" id="core">
+                <i class="fa-solid fa-power-off core-icon" id="core-icon"></i>
             </div>
         </div>
 
-        <!-- INPUT MATRIX -->
-        <div class="input-zone">
-            <input type="text" class="quantum-input" id="urlInput" placeholder="Paste Secure Link..." autocomplete="off">
-            <button class="paste-trigger" onclick="engagePaste()"><i class="fa-solid fa-paste"></i></button>
+        <div class="header">
+            <h1 class="title">FAZ YTxTK</h1>
+            <p class="subtitle">Celestial Media Engine</p>
         </div>
 
-        <button class="initiate-btn" id="startBtn" onclick="executeSequence()">
-            Initialize Extraction
+        <!-- Input -->
+        <div class="input-matrix">
+            <input type="text" class="omega-input" id="urlInput" placeholder="System Ready. Awaiting Link..." autocomplete="off">
+            <div class="mode-indicator" id="modeIcon"><i class="fa-solid fa-link"></i></div>
+        </div>
+
+        <button class="omega-btn" id="initBtn" onclick="initiateSequence()">
+            EXTRACT DATA
         </button>
 
-        <!-- TERMINAL LOG -->
-        <div class="terminal-log" id="terminal"></div>
-
-        <!-- RESULT VIEWPORT -->
-        <div class="result-viewport" id="viewport">
-            <div class="media-monitor">
-                <div class="monitor-screen">
-                    <video id="v-player" controls playsinline></video>
-                    <div class="meta-overlay">
-                        <div class="meta-tags">
-                            <span class="tag">HD</span>
-                            <span class="tag">MP4</span>
-                            <span class="tag" id="t-platform">TIKTOK</span>
-                        </div>
-                        <div class="meta-title" id="v-title">Video Title Placeholder</div>
+        <!-- Result -->
+        <div id="omega-result">
+            <div class="holo-card">
+                <div class="info-grid">
+                    <img id="r-avatar" src="" class="info-avatar">
+                    <div class="info-text">
+                        <h3 id="r-title">Title</h3>
+                        <p id="r-author">AUTHOR_ID</p>
                     </div>
                 </div>
-            </div>
 
-            <div class="control-deck">
-                <a href="#" id="dl-video" target="_blank" class="deck-btn primary">
-                    <i class="fa-solid fa-download"></i> DOWNLOAD VIDEO
-                </a>
-                <a href="#" id="dl-audio" target="_blank" class="deck-btn">
-                    <i class="fa-solid fa-music"></i> EXTRACT MP3
-                </a>
-                <a href="#" id="dl-cover" target="_blank" class="deck-btn">
-                    <i class="fa-solid fa-image"></i> SAVE COVER
-                </a>
+                <div class="media-viewer">
+                    <video id="r-player" controls playsinline></video>
+                </div>
+
+                <div class="action-row">
+                    <a id="dl-main" href="#" target="_blank" class="act-btn primary">
+                        <i class="fa-solid fa-download"></i> DOWNLOAD HD
+                    </a>
+                    <a id="dl-sec" href="#" target="_blank" class="act-btn">
+                        <i class="fa-solid fa-music"></i> AUDIO
+                    </a>
+                    <a id="dl-cov" href="#" target="_blank" class="act-btn">
+                        <i class="fa-solid fa-image"></i> COVER
+                    </a>
+                </div>
             </div>
         </div>
 
-        <!-- HISTORY DOCK -->
-        <div class="history-dock">
-            <div class="dock-header">
-                <span>Recent Protocols</span>
-                <span class="clear-btn" onclick="purgeHistory()">CLEAR</span>
-            </div>
-            <div class="dock-grid" id="historyGrid">
-                <!-- Items -->
-            </div>
-        </div>
+        <!-- Mini History Dots -->
+        <div class="history-dots" id="h-dots"></div>
 
     </div>
 </div>
 
-<div class="toast" id="toast">
-    <i class="fa-solid fa-check"></i> <span id="toast-msg">Operation Complete</span>
-</div>
+<div class="omega-toast" id="toast">SYSTEM MESSAGE</div>
 
 <script>
-    /* --- QUANTUM CORE CONFIG --- */
-    let SYSTEM_MODE = 'tiktok';
-    const API_GATES = {
+    /* --- OMEGA SYSTEM CONFIG --- */
+    let CURRENT_PROTOCOL = null; // 'tiktok' or 'youtube'
+    const GATEWAYS = {
         tiktok: "https://api.xyro.site/download/tiktok?url=",
         youtube: "https://api.xyro.site/download/youtubemp4?url="
     };
 
     const UI = {
+        core: document.getElementById('core'),
+        icon: document.getElementById('core-icon'),
         input: document.getElementById('urlInput'),
-        terminal: document.getElementById('terminal'),
-        viewport: document.getElementById('viewport'),
-        orb: document.getElementById('orb'),
-        root: document.documentElement
+        modeIcon: document.getElementById('modeIcon'),
+        btn: document.getElementById('initBtn'),
+        result: document.getElementById('omega-result'),
+        shell: document.getElementById('shell')
     };
 
-    /* --- 3D TILT ENGINE --- */
-    const card = document.getElementById('tiltCard');
-    document.addEventListener('mousemove', (e) => {
-        if(window.innerWidth < 768) return; // Disable on mobile
-        const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-        const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
-        card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+    /* --- EVENT LISTENERS --- */
+    
+    // Smart Input Validation
+    UI.input.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if(val.includes('tiktok.com')) {
+            activateMode('tiktok');
+        } else if(val.includes('youtube.com') || val.includes('youtu.be')) {
+            activateMode('youtube');
+        } else {
+            resetMode();
+        }
     });
 
-    /* --- SYSTEM LOGIC --- */
-    function setSystem(mode) {
-        SYSTEM_MODE = mode;
-        
-        // Visual Toggles
-        document.querySelectorAll('.mode-chip').forEach(c => c.classList.remove('active'));
-        document.getElementById(mode === 'tiktok' ? 'chip-tt' : 'chip-yt').classList.add('active');
+    // 3D Parallax Effect
+    document.addEventListener('mousemove', (e) => {
+        if(window.innerWidth < 768) return;
+        const x = (window.innerWidth / 2 - e.pageX) / 40;
+        const y = (window.innerHeight / 2 - e.pageY) / 40;
+        UI.shell.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    });
 
-        // CSS Variables Swap
+    /* --- CORE LOGIC --- */
+
+    function activateMode(mode) {
+        CURRENT_PROTOCOL = mode;
+        UI.modeIcon.className = 'mode-indicator'; // reset
+        
         if(mode === 'tiktok') {
-            UI.root.style.setProperty('--primary', 'var(--neon-tk)');
-            UI.root.style.setProperty('--secondary', 'var(--neon-tk-sec)');
-            UI.input.placeholder = "Paste TikTok Link...";
+            UI.modeIcon.classList.add('active-tt');
+            UI.modeIcon.innerHTML = '<i class="fa-brands fa-tiktok"></i>';
+            updateCore('ready', '#00f2ea');
         } else {
-            UI.root.style.setProperty('--primary', 'var(--neon-yt)');
-            UI.root.style.setProperty('--secondary', 'var(--neon-yt-sec)');
-            UI.input.placeholder = "Paste YouTube Link...";
+            UI.modeIcon.classList.add('active-yt');
+            UI.modeIcon.innerHTML = '<i class="fa-brands fa-youtube"></i>';
+            updateCore('ready', '#ff0000');
+        }
+    }
+
+    function resetMode() {
+        CURRENT_PROTOCOL = null;
+        UI.modeIcon.className = 'mode-indicator';
+        UI.modeIcon.innerHTML = '<i class="fa-solid fa-link"></i>';
+        updateCore('idle');
+    }
+
+    function updateCore(state, color = null) {
+        UI.core.className = 'neural-core'; // Reset classes
+        if(state === 'processing') {
+            UI.core.classList.add('processing');
+            UI.icon.className = 'fa-solid fa-circle-notch fa-spin core-icon';
+            if(color) UI.core.style.borderColor = color;
+        } else if (state === 'success') {
+            UI.core.classList.add('success');
+            UI.icon.className = 'fa-solid fa-check core-icon';
+        } else if (state === 'error') {
+            UI.core.classList.add('error');
+            UI.icon.className = 'fa-solid fa-xmark core-icon';
+        } else if (state === 'ready') {
+            UI.icon.className = 'fa-solid fa-bolt core-icon';
+            if(color) UI.core.style.borderColor = color;
+        } else {
+            // Idle
+            UI.icon.className = 'fa-solid fa-power-off core-icon';
+            UI.core.style.borderColor = 'var(--glass-border)';
+        }
+    }
+
+    async function initiateSequence() {
+        const url = UI.input.value.trim();
+        
+        // Manual mode detection if paste happened without input event
+        if(!CURRENT_PROTOCOL) {
+            if(url.includes('tiktok')) activateMode('tiktok');
+            else if(url.includes('youtu')) activateMode('youtube');
+            else return showToast("INVALID PROTOCOL DETECTED");
         }
 
-        // Reset
-        UI.viewport.style.display = 'none';
-        UI.terminal.style.display = 'none';
-        UI.input.value = '';
-    }
+        UI.result.style.display = 'none';
+        updateCore('processing', CURRENT_PROTOCOL === 'tiktok' ? '#00f2ea' : '#ff0000');
+        UI.btn.innerText = "ACCESSING MAINFRAME...";
+        UI.btn.disabled = true;
 
-    async function engagePaste() {
         try {
-            const text = await navigator.clipboard.readText();
-            UI.input.value = text;
-            
-            // Auto-Detect Protocol
-            if(text.includes('youtube') || text.includes('youtu.be')) {
-                if(SYSTEM_MODE !== 'youtube') {
-                    setSystem('youtube');
-                    UI.input.value = text;
-                    triggerToast("YouTube Protocol Detected");
-                }
-            } else if(text.includes('tiktok')) {
-                if(SYSTEM_MODE !== 'tiktok') {
-                    setSystem('tiktok');
-                    UI.input.value = text;
-                    triggerToast("TikTok Protocol Detected");
-                }
-            }
-        } catch(e) { triggerToast("Clipboard Access Denied", true); }
-    }
-
-    async function executeSequence() {
-        const url = UI.input.value.trim();
-        if(!url) return triggerToast("Input Empty", true);
-
-        // Sequence Start
-        UI.viewport.style.display = 'none';
-        UI.terminal.style.display = 'block';
-        UI.terminal.innerHTML = '';
-        
-        await log("Initializing connection...", 100);
-        await log("Handshaking with API Gateway...", 600);
-        
-        try {
-            const req = await fetch(API_GATES[SYSTEM_MODE] + encodeURIComponent(url));
+            const req = await fetch(GATEWAYS[CURRENT_PROTOCOL] + encodeURIComponent(url));
             const res = await req.json();
 
             if(res.status) {
-                await log("Data packet received.", 200);
-                await log("Decryping media stream...", 400);
-                renderInterface(res.result);
-                saveToDock(res.result);
-                triggerToast("Extraction Successful");
+                renderHologram(res.result);
+                updateCore('success');
+                saveHistory(url);
+                showToast("DATA EXTRACTION COMPLETE");
             } else {
-                throw new Error("Invalid Response");
+                throw new Error("Gateway Error");
             }
         } catch(e) {
             console.error(e);
-            await log("CRITICAL ERROR: Connection Failed", 0);
-            triggerToast("Extraction Failed", true);
+            updateCore('error');
+            showToast("CONNECTION FAILURE");
+        } finally {
+            UI.btn.innerText = "EXTRACT DATA";
+            UI.btn.disabled = false;
         }
     }
 
-    /* --- RENDERING --- */
-    function renderInterface(data) {
-        UI.terminal.style.display = 'none';
-        UI.viewport.style.display = 'block';
+    function renderHologram(data) {
+        let vid, title, author, avatar, cover, aud;
 
-        let video, title, audio, cover;
-
-        if(SYSTEM_MODE === 'tiktok') {
-            video = data.media.find(m => m.type === 'nowatermark_hd')?.url || data.media.find(m => m.type === 'nowatermark')?.url;
-            audio = data.music.url;
+        if(CURRENT_PROTOCOL === 'tiktok') {
+            vid = data.media.find(m => m.type === 'nowatermark_hd')?.url || data.media[0].url;
+            aud = data.music.url;
             cover = data.cover;
-            title = data.desc || "TikTok Video";
-            document.getElementById('t-platform').innerText = "TIKTOK";
-            document.getElementById('t-platform').style.background = "var(--neon-tk)";
+            title = data.desc || "TikTok Media";
+            author = data.author.nickname;
+            avatar = data.author.avatar;
         } else {
-            video = data.url || data.link || data.download;
+            vid = data.url || data.download;
+            aud = null;
             cover = data.thumb || data.thumbnail;
             title = data.title;
-            audio = null; // YouTube MP4 API often doesn't give separate audio
-            document.getElementById('t-platform').innerText = "YOUTUBE";
-            document.getElementById('t-platform').style.background = "var(--neon-yt)";
+            author = "YouTube HD";
+            avatar = cover; 
         }
 
-        // DOM Injection
-        document.getElementById('v-player').src = video;
-        document.getElementById('v-title').innerText = title.substring(0, 50) + "...";
-        
-        document.getElementById('dl-video').href = video;
-        document.getElementById('dl-cover').href = cover;
+        // Inject
+        document.getElementById('r-player').src = vid;
+        document.getElementById('r-title').innerText = title.substring(0, 40) + "...";
+        document.getElementById('r-author').innerText = author;
+        document.getElementById('r-avatar').src = avatar;
 
-        const audioBtn = document.getElementById('dl-audio');
-        if(audio) {
-            audioBtn.href = audio;
-            audioBtn.style.opacity = '1';
-            audioBtn.style.pointerEvents = 'all';
+        document.getElementById('dl-main').href = vid;
+        document.getElementById('dl-cov').href = cover;
+
+        const audBtn = document.getElementById('dl-sec');
+        if(aud) {
+            audBtn.href = aud;
+            audBtn.style.display = 'flex';
         } else {
-            audioBtn.style.opacity = '0.3';
-            audioBtn.style.pointerEvents = 'none';
+            audBtn.style.display = 'none';
         }
 
-        // Scroll into view
-        UI.viewport.scrollIntoView({ behavior: 'smooth' });
+        UI.result.style.display = 'block';
+        UI.result.scrollIntoView({ behavior: 'smooth' });
     }
 
-    /* --- TERMINAL FX --- */
-    function log(msg, delay) {
-        return new Promise(resolve => {
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span>></span> ${msg}`;
-            UI.terminal.appendChild(line);
-            setTimeout(resolve, delay);
+    /* --- HISTORY DOTS --- */
+    function saveHistory(url) {
+        let hist = JSON.parse(localStorage.getItem('faz_omega_h')) || [];
+        hist.push(url);
+        if(hist.length > 5) hist.shift();
+        localStorage.setItem('faz_omega_h', JSON.stringify(hist));
+        renderDots();
+    }
+
+    function renderDots() {
+        const c = document.getElementById('h-dots');
+        const hist = JSON.parse(localStorage.getItem('faz_omega_h')) || [];
+        c.innerHTML = '';
+        hist.forEach(url => {
+            const d = document.createElement('div');
+            d.className = 'h-dot';
+            d.onclick = () => { UI.input.value = url; UI.input.dispatchEvent(new Event('input')); };
+            c.appendChild(d);
         });
     }
 
-    /* --- HISTORY DOCK --- */
-    function saveToDock(data) {
-        let history = JSON.parse(localStorage.getItem('faz_quantum_dock')) || [];
-        
-        let item = {
-            thumb: SYSTEM_MODE === 'tiktok' ? data.cover : (data.thumb || data.thumbnail),
-            link: SYSTEM_MODE === 'tiktok' ? (data.media[0].url) : (data.url || data.download),
-            mode: SYSTEM_MODE
-        };
-
-        history.unshift(item);
-        if(history.length > 8) history.pop();
-        
-        localStorage.setItem('faz_quantum_dock', JSON.stringify(history));
-        renderDock();
-    }
-
-    function renderDock() {
-        const grid = document.getElementById('historyGrid');
-        const history = JSON.parse(localStorage.getItem('faz_quantum_dock')) || [];
-        
-        grid.innerHTML = '';
-        history.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'dock-item';
-            div.innerHTML = `
-                <img src="${item.thumb}">
-                <div class="dock-badge" style="background:${item.mode==='tiktok'?'var(--neon-tk)':'var(--neon-yt)'}">
-                    ${item.mode==='tiktok'?'TT':'YT'}
-                </div>
-            `;
-            div.onclick = () => window.open(item.link, '_blank');
-            grid.appendChild(div);
-        });
-    }
-
-    function purgeHistory() {
-        localStorage.removeItem('faz_quantum_dock');
-        renderDock();
-        triggerToast("Memory Purged");
-    }
-
-    /* --- UTILS --- */
-    function triggerToast(msg, isError = false) {
+    function showToast(msg) {
         const t = document.getElementById('toast');
-        document.getElementById('toast-msg').innerText = msg;
-        t.style.borderColor = isError ? 'red' : 'var(--primary)';
+        t.innerText = msg;
         t.classList.add('visible');
         setTimeout(() => t.classList.remove('visible'), 3000);
     }
 
-    // Initialize
-    renderDock();
+    // Auto Paste on Load
+    window.addEventListener('load', async () => {
+        renderDots();
+        try {
+            const text = await navigator.clipboard.readText();
+            if(text.startsWith('http')) {
+                UI.input.value = text;
+                UI.input.dispatchEvent(new Event('input')); // Trigger detection
+                showToast("CLIPBOARD DATA DETECTED");
+            }
+        } catch(e) {}
+    });
+
 </script>
 
 </body>
