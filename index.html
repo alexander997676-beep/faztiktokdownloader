@@ -3,35 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAZ Titanium | Multi-Downloader</title>
+    <title>FAZ PLATINUM | Ultimate Downloader</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* TikTok Colors */
-            --tt-primary: #FF2E63;
-            --tt-secondary: #08D9D6;
+            /* TikTok Theme */
+            --tt-primary: #00f2ea;
+            --tt-accent: #ff0050;
             
-            /* YouTube Colors */
-            --yt-primary: #FF0000;
-            --yt-secondary: #FFFFFF;
+            /* YouTube Theme */
+            --yt-primary: #ff0000;
+            --yt-accent: #ffffff;
 
-            /* Default State (TikTok) */
-            --primary: var(--tt-primary);
-            --secondary: var(--tt-secondary);
+            /* Default (TikTok) */
+            --theme-glow: var(--tt-primary);
+            --theme-accent: var(--tt-accent);
             
-            --bg-dark: #0F0F12;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-main: #FFFFFF;
-            --text-muted: #8E9BAE;
-            --shadow-lg: 0 40px 80px -20px rgba(0, 0, 0, 0.8);
+            --bg-deep: #050505;
+            --card-bg: rgba(20, 20, 20, 0.6);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-sec: #8b9bb4;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Space Grotesk', sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background-color: var(--bg-dark);
+            background-color: var(--bg-deep);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -42,421 +41,447 @@
             transition: 0.5s;
         }
 
-        /* --- Animated Mesh Background --- */
-        .mesh-bg {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background: #0f0f12; overflow: hidden;
+        /* --- Cyber Grid Background --- */
+        .cyber-grid {
+            position: fixed; top: 0; left: 0; width: 200vw; height: 200vh;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+            animation: gridMove 20s linear infinite;
+            z-index: -2;
+            pointer-events: none;
         }
-        .blob {
-            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4;
-            animation: move 20s infinite alternate; transition: background 0.5s;
-        }
-        .blob-1 { width: 500px; height: 500px; background: var(--primary); top: -10%; left: -10%; }
-        .blob-2 { width: 400px; height: 400px; background: var(--secondary); bottom: -10%; right: -10%; animation-delay: -5s; }
-        
-        @keyframes move { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(50px, 50px) rotate(20deg); } }
+        @keyframes gridMove { 0% { transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px); } 100% { transform: perspective(500px) rotateX(60deg) translateY(40px) translateZ(-200px); } }
 
-        /* --- Grain Overlay --- */
-        .noise {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        /* --- Ambient Glow --- */
+        .glow-spot {
+            position: fixed; width: 600px; height: 600px; border-radius: 50%;
+            background: var(--theme-glow); filter: blur(150px); opacity: 0.15;
+            z-index: -1; transition: background 0.8s ease;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
 
-        .container {
-            width: 100%; max-width: 900px; display: grid; grid-template-columns: 1fr; gap: 20px; padding: 20px; z-index: 2;
-        }
-        @media(min-width: 768px) {
-            .container { grid-template-columns: 1.5fr 1fr; align-items: start; }
-            .history-panel { display: block !important; }
+        /* --- Layout --- */
+        .app-container {
+            width: 100%; max-width: 500px; padding: 20px; z-index: 10;
         }
 
         /* --- Glass Card --- */
-        .card {
-            background: rgba(18, 18, 22, 0.75);
-            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border); border-radius: 32px;
-            padding: 32px; box-shadow: var(--shadow-lg); position: relative; overflow: hidden;
+        .main-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            border-radius: 30px; padding: 30px;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 20px 50px rgba(0,0,0,0.5);
             transition: transform 0.3s;
         }
 
-        /* --- Tabs --- */
-        .tabs {
-            display: flex; background: rgba(0,0,0,0.3); padding: 6px;
-            border-radius: 18px; margin-bottom: 25px; border: 1px solid var(--glass-border);
+        /* --- Mode Switcher --- */
+        .mode-switch {
+            display: flex; background: rgba(0,0,0,0.4); border-radius: 20px; padding: 5px;
+            margin-bottom: 25px; position: relative; border: 1px solid var(--border);
         }
-        .tab-btn {
-            flex: 1; border: none; background: transparent; color: var(--text-muted);
-            padding: 12px; font-weight: 700; border-radius: 14px; cursor: pointer;
-            transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        .mode-btn {
+            flex: 1; border: none; background: transparent; color: var(--text-sec);
+            padding: 12px; font-weight: 700; font-size: 14px; cursor: pointer;
+            z-index: 2; transition: color 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .tab-btn.active {
-            background: rgba(255,255,255,0.1); color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        .mode-btn.active { color: white; }
+        .mode-slider {
+            position: absolute; top: 5px; left: 5px; width: calc(50% - 5px); height: calc(100% - 10px);
+            background: var(--theme-glow); border-radius: 16px; transition: 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            opacity: 0.2; z-index: 1;
         }
-        .tab-btn i { font-size: 16px; }
+        .mode-btn:nth-child(2).active ~ .mode-slider { transform: translateX(100%); background: var(--theme-glow); }
 
-        /* --- Header & Input --- */
-        .header { margin-bottom: 20px; }
-        .logo { font-size: 28px; font-weight: 800; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; }
-        .logo i { color: var(--primary); transition: 0.3s; }
-        .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 5px; }
+        /* --- Header --- */
+        .brand { text-align: center; margin-bottom: 25px; }
+        .brand h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; text-transform: uppercase; }
+        .brand span { color: var(--theme-glow); text-shadow: 0 0 20px var(--theme-glow); transition: 0.5s; }
+        .brand p { font-size: 12px; color: var(--text-sec); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
 
-        .input-group {
-            position: relative; background: rgba(0,0,0,0.3);
-            border: 1px solid var(--glass-border); border-radius: 20px; padding: 8px;
-            display: flex; align-items: center; transition: 0.3s;
+        /* --- Input --- */
+        .input-wrapper {
+            position: relative; margin-bottom: 20px;
         }
-        .input-group:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05); }
-        .input-group input {
-            flex: 1; background: transparent; border: none; color: white; font-size: 16px; padding: 12px 15px; outline: none;
+        .url-input {
+            width: 100%; background: rgba(0,0,0,0.3); border: 2px solid var(--border);
+            padding: 16px 50px 16px 16px; border-radius: 18px; color: white;
+            font-size: 15px; outline: none; transition: 0.3s;
         }
-        .btn-paste {
-            background: rgba(255,255,255,0.1); color: white; border: none; padding: 10px 16px;
-            border-radius: 14px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;
+        .url-input:focus { border-color: var(--theme-glow); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .paste-btn {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.1); border: none; color: white;
+            width: 32px; height: 32px; border-radius: 10px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
-        .btn-paste:hover { background: rgba(255,255,255,0.2); }
+        .paste-btn:hover { background: var(--theme-glow); color: black; }
 
-        /* --- Hero Button --- */
-        .btn-hero {
-            width: 100%; margin-top: 20px; padding: 20px; border-radius: 20px; border: none;
-            background: linear-gradient(135deg, var(--primary) 0%, #000 150%);
-            color: white; font-size: 16px; font-weight: 700; cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s;
+        /* --- Action Button --- */
+        .cyber-btn {
+            width: 100%; padding: 18px; border: none; border-radius: 18px;
+            background: linear-gradient(135deg, var(--theme-glow), var(--theme-accent));
+            color: #fff; font-weight: 800; font-size: 16px; letter-spacing: 1px;
+            cursor: pointer; position: relative; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: 0.3s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
-        .btn-hero:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        .btn-hero:disabled { opacity: 0.7; cursor: not-allowed; }
+        .cyber-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+        .cyber-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 40px -10px var(--theme-glow); }
+        .cyber-btn:hover::before { left: 100%; }
+        .cyber-btn:active { transform: scale(0.98); }
+        .cyber-btn.loading { filter: grayscale(1); cursor: not-allowed; }
 
-        /* --- Results --- */
-        #result-area { display: none; margin-top: 30px; animation: slideUp 0.5s ease; }
+        /* --- Results Section --- */
+        #result-container { display: none; margin-top: 30px; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         
-        .result-card {
-            background: rgba(255,255,255,0.03); border-radius: 20px; padding: 20px;
-            border: 1px solid var(--glass-border); text-align: center;
+        .media-card {
+            background: rgba(0,0,0,0.3); border-radius: 20px; overflow: hidden;
+            border: 1px solid var(--border);
         }
         
-        .res-thumb {
-            width: 100%; border-radius: 16px; margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
+        .media-header { padding: 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+        .media-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--theme-glow); }
+        .media-meta h3 { font-size: 14px; color: white; }
+        .media-meta p { font-size: 11px; color: var(--text-sec); }
 
-        .res-info h3 { font-size: 16px; margin-bottom: 5px; line-height: 1.4; }
-        .res-info p { color: var(--text-muted); font-size: 13px; margin-bottom: 15px; }
+        .video-wrapper { position: relative; background: black; }
+        video { width: 100%; display: block; max-height: 400px; }
 
+        .media-actions { padding: 15px; display: grid; gap: 10px; }
+        
         .dl-btn {
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%; padding: 15px; border-radius: 14px;
-            background: white; color: black; text-decoration: none; font-weight: 700; font-size: 14px;
-            transition: 0.2s; margin-top: 10px;
+            padding: 14px; border-radius: 12px; text-decoration: none;
+            font-weight: 700; font-size: 14px; transition: 0.2s;
         }
-        .dl-btn:hover { background: #eee; transform: translateY(-2px); }
+        .dl-primary { background: white; color: black; }
+        .dl-primary:hover { background: var(--theme-glow); box-shadow: 0 0 20px var(--theme-glow); }
+        .dl-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); }
+        .dl-secondary:hover { background: rgba(255,255,255,0.1); }
 
-        /* --- History --- */
-        .history-panel { display: none; }
-        .history-title { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px; }
-        .history-item {
-            display: flex; gap: 12px; align-items: center; background: rgba(255,255,255,0.03);
-            padding: 10px; border-radius: 14px; margin-bottom: 10px; cursor: pointer; transition: 0.2s;
+        /* --- History Pill --- */
+        .history-section { margin-top: 25px; }
+        .history-label { font-size: 11px; color: var(--text-sec); text-transform: uppercase; margin-bottom: 10px; font-weight: 700; letter-spacing: 1px; }
+        .history-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+        .history-scroll::-webkit-scrollbar { display: none; }
+        
+        .h-item {
+            min-width: 70px; cursor: pointer; text-align: center; position: relative;
         }
-        .history-item:hover { background: rgba(255,255,255,0.08); }
-        .history-item img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
-        .h-info { flex: 1; overflow: hidden; }
-        .h-info h4 { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
-        .badge-tt { background: var(--tt-primary); color: white; }
-        .badge-yt { background: var(--yt-primary); color: white; }
+        .h-thumb {
+            width: 70px; height: 70px; border-radius: 14px; object-fit: cover;
+            border: 1px solid var(--border); transition: 0.2s;
+        }
+        .h-item:hover .h-thumb { border-color: var(--theme-glow); transform: scale(1.05); }
+        .h-icon {
+            position: absolute; bottom: 5px; right: 5px; width: 18px; height: 18px;
+            background: black; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 10px; color: white; border: 1px solid var(--border);
+        }
 
         /* --- Toast --- */
-        .toast {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(50px);
-            background: #1a1a1a; padding: 12px 24px; border-radius: 50px; border: 1px solid var(--glass-border);
-            display: flex; gap: 10px; opacity: 0; pointer-events: none; transition: 0.4s; z-index: 100;
+        .toast-box {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(10px);
+            border: 1px solid var(--theme-glow); padding: 12px 24px; border-radius: 50px;
+            color: white; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .toast.active { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast-box.show { transform: translateX(-50%) translateY(0); }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Loading Animation */
-        .dots { display: inline-flex; gap: 4px; }
-        .dots div { width: 6px; height: 6px; background: white; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
-        .dots div:nth-child(1) { animation-delay: -0.32s; }
-        .dots div:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-<div class="mesh-bg">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-</div>
-<div class="noise"></div>
+<div class="cyber-grid"></div>
+<div class="glow-spot"></div>
 
-<div class="container">
+<div class="app-container">
     
-    <!-- Main Card -->
-    <div class="card">
-        
-        <!-- Tab Switcher -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('tiktok')" id="tab-tt">
+    <!-- Branding -->
+    <div class="brand">
+        <h1>FAZ <span id="brand-highlight">PLATINUM</span></h1>
+        <p>Advanced Media Extraction Engine</p>
+    </div>
+
+    <div class="main-card">
+        <!-- Switcher -->
+        <div class="mode-switch">
+            <button class="mode-btn active" onclick="setMode('tiktok')" id="btn-tt">
                 <i class="fa-brands fa-tiktok"></i> TikTok
             </button>
-            <button class="tab-btn" onclick="switchTab('youtube')" id="tab-yt">
+            <button class="mode-btn" onclick="setMode('youtube')" id="btn-yt">
                 <i class="fa-brands fa-youtube"></i> YouTube
             </button>
+            <div class="mode-slider"></div>
         </div>
 
-        <div class="header">
-            <h1 class="logo"><i class="fa-solid fa-layer-group" id="main-icon"></i> <span id="app-title">FAZ TIKTOK</span></h1>
-            <p class="subtitle" id="app-desc">Download HD Videos without watermark</p>
+        <!-- Input -->
+        <div class="input-wrapper">
+            <input type="text" class="url-input" id="urlInput" placeholder="Paste TikTok Link..." autocomplete="off">
+            <button class="paste-btn" onclick="handlePaste()"><i class="fa-solid fa-paste"></i></button>
         </div>
 
-        <div class="input-group">
-            <input type="text" id="urlInput" placeholder="Paste link here..." autocomplete="off">
-            <button class="btn-paste" onclick="pasteFromClipboard()">PASTE</button>
-        </div>
-
-        <button class="btn-hero" id="mainBtn" onclick="processLink()">
-            <i class="fa-solid fa-bolt"></i> <span id="btn-text">DOWNLOAD VIDEO</span>
+        <!-- Action -->
+        <button class="cyber-btn" id="actionBtn" onclick="process()">
+            <span id="btn-text">INITIALIZE DOWNLOAD</span>
         </button>
 
-        <!-- Result Area -->
-        <div id="result-area">
-            <!-- Content Injected via JS -->
+        <!-- Result -->
+        <div id="result-container">
+            <div class="media-card">
+                <div class="media-header">
+                    <img id="r-avatar" src="" class="media-avatar">
+                    <div class="media-meta">
+                        <h3 id="r-title">Video Title</h3>
+                        <p id="r-author">@author</p>
+                    </div>
+                </div>
+                
+                <div class="video-wrapper">
+                    <video id="r-player" controls playsinline></video>
+                </div>
+
+                <div class="media-actions">
+                    <a id="dl-main" href="#" target="_blank" class="dl-btn dl-primary">
+                        <i class="fa-solid fa-download"></i> DOWNLOAD HD
+                    </a>
+                    <button id="copy-cap" onclick="copyCaption()" class="dl-btn dl-secondary" style="cursor:pointer">
+                        <i class="fa-regular fa-copy"></i> COPY TITLE
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="history-section">
+            <div class="history-label">Session History</div>
+            <div class="history-scroll" id="history-list">
+                <!-- JS will populate this -->
+            </div>
         </div>
     </div>
-
-    <!-- History Sidebar -->
-    <div class="card history-panel">
-        <div class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> History</div>
-        <div id="history-list">
-            <div style="color: var(--text-muted); font-size: 13px;">No downloads yet.</div>
-        </div>
-    </div>
-
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast">
-    <i class="fa-solid fa-circle-check" style="color: var(--primary)"></i>
-    <span id="toast-msg">Success</span>
+<div class="toast-box" id="toast">
+    <i class="fa-solid fa-check-circle"></i> <span id="toast-msg">Success</span>
 </div>
 
 <script>
-    // Configuration
-    let currentMode = 'tiktok';
-    const APIs = {
+    // --- Configuration ---
+    let MODE = 'tiktok';
+    const ENDPOINTS = {
         tiktok: "https://api.xyro.site/download/tiktok?url=",
-        youtube: "https://api.xyro.site/download/youtubemp3?url="
+        youtube: "https://api.xyro.site/download/youtubemp4?url="
     };
 
-    // --- Tab Switching Logic ---
-    function switchTab(mode) {
-        currentMode = mode;
-        const root = document.documentElement;
+    const UI = {
+        root: document.documentElement,
+        input: document.getElementById('urlInput'),
+        btn: document.getElementById('actionBtn'),
+        btnText: document.getElementById('btn-text'),
+        result: document.getElementById('result-container'),
+        brand: document.getElementById('brand-highlight')
+    };
+
+    // --- Core Functions ---
+
+    function setMode(mode) {
+        MODE = mode;
         
-        // Update Buttons
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(mode === 'tiktok' ? 'tab-tt' : 'tab-yt').classList.add('active');
+        // Button States
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(mode === 'tiktok' ? 'btn-tt' : 'btn-yt').classList.add('active');
 
-        // Update UI Text & Colors
-        const title = document.getElementById('app-title');
-        const desc = document.getElementById('app-desc');
-        const icon = document.getElementById('main-icon');
-        const btnText = document.getElementById('btn-text');
-
+        // Theme Variables
         if (mode === 'tiktok') {
-            root.style.setProperty('--primary', 'var(--tt-primary)');
-            root.style.setProperty('--secondary', 'var(--tt-secondary)');
-            title.innerText = "FAZ TIKTOK";
-            desc.innerText = "No-Watermark Video Downloader";
-            icon.className = "fa-brands fa-tiktok";
-            btnText.innerText = "DOWNLOAD VIDEO";
+            UI.root.style.setProperty('--theme-glow', 'var(--tt-primary)');
+            UI.root.style.setProperty('--theme-accent', 'var(--tt-accent)');
+            UI.input.placeholder = "Paste TikTok Link...";
+            UI.brand.innerText = "TIKTOK";
         } else {
-            root.style.setProperty('--primary', 'var(--yt-primary)');
-            root.style.setProperty('--secondary', 'var(--yt-secondary)');
-            title.innerText = "FAZ YOUTUBE";
-            desc.innerText = "YouTube to MP3 Converter";
-            icon.className = "fa-brands fa-youtube";
-            btnText.innerText = "CONVERT TO MP3";
+            UI.root.style.setProperty('--theme-glow', 'var(--yt-primary)');
+            UI.root.style.setProperty('--theme-accent', 'var(--yt-accent)');
+            UI.input.placeholder = "Paste YouTube Link...";
+            UI.brand.innerText = "YOUTUBE";
         }
 
-        // Reset
-        document.getElementById('result-area').style.display = 'none';
-        document.getElementById('urlInput').value = '';
-        document.getElementById('urlInput').focus();
+        // Reset UI
+        UI.result.style.display = 'none';
+        UI.input.value = '';
+        UI.input.focus();
     }
 
-    // --- Main Process Logic ---
-    async function processLink() {
-        const input = document.getElementById('urlInput');
-        const url = input.value.trim();
-        const btn = document.getElementById('mainBtn');
-        const resultArea = document.getElementById('result-area');
-
-        if (!url) {
-            showToast("Please paste a link first", "error");
-            return;
+    async function handlePaste() {
+        try {
+            const text = await navigator.clipboard.readText();
+            UI.input.value = text;
+            
+            // Smart Auto-Switch Logic
+            if (text.includes('youtube.com') || text.includes('youtu.be')) {
+                if (MODE !== 'youtube') {
+                    setMode('youtube');
+                    UI.input.value = text; // Re-set value after switch
+                    showToast("Switched to YouTube Mode", true);
+                }
+            } else if (text.includes('tiktok.com')) {
+                if (MODE !== 'tiktok') {
+                    setMode('tiktok');
+                    UI.input.value = text;
+                    showToast("Switched to TikTok Mode", true);
+                }
+            }
+            
+            showToast("Link Pasted");
+        } catch (err) {
+            showToast("Clipboard Permission Denied");
         }
+    }
 
-        // Loading State
-        resultArea.style.display = 'none';
-        btn.innerHTML = `<div class="dots"><div></div><div></div><div></div></div> PROCESSING`;
-        btn.disabled = true;
+    async function process() {
+        const url = UI.input.value.trim();
+        if(!url) return showToast("Please paste a link first");
+
+        // UI Loading
+        UI.result.style.display = 'none';
+        UI.btn.classList.add('loading');
+        UI.btnText.innerText = "ANALYZING STREAM...";
+        UI.btn.disabled = true;
 
         try {
-            const endpoint = APIs[currentMode] + encodeURIComponent(url);
-            const req = await fetch(endpoint);
-            const res = await req.json();
+            const res = await fetch(ENDPOINTS[MODE] + encodeURIComponent(url));
+            const data = await res.json();
 
-            if (res.status) {
-                if (currentMode === 'tiktok') {
-                    renderTikTok(res.result);
-                } else {
-                    renderYouTube(res.result);
-                }
-                showToast("Success! Content ready.");
+            if(data.status) {
+                renderResult(data.result);
+                saveHistory(data.result);
+                showToast("Media Extracted Successfully");
             } else {
-                throw new Error("API Error");
+                throw new Error("API Fail");
             }
 
         } catch (e) {
             console.error(e);
-            showToast("Failed. Check link or try again.", "error");
+            showToast("Download Failed. Private or Invalid Link.");
         } finally {
-            btn.innerHTML = `<i class="fa-solid fa-bolt"></i> ${currentMode === 'tiktok' ? 'DOWNLOAD VIDEO' : 'CONVERT TO MP3'}`;
-            btn.disabled = false;
+            UI.btn.classList.remove('loading');
+            UI.btnText.innerText = "INITIALIZE DOWNLOAD";
+            UI.btn.disabled = false;
         }
     }
 
-    // --- Renderers ---
+    // --- Rendering ---
 
-    function renderTikTok(data) {
-        const resultArea = document.getElementById('result-area');
-        const videoUrl = data.media.find(m => m.type === 'nowatermark_hd')?.url || data.media.find(m => m.type === 'nowatermark')?.url;
+    function renderResult(data) {
+        // Extract data based on platform structure
+        let videoUrl, title, author, avatar, cover;
+
+        if (MODE === 'tiktok') {
+            videoUrl = data.media.find(m => m.type === 'nowatermark_hd')?.url || data.media.find(m => m.type === 'nowatermark')?.url;
+            title = data.desc || "TikTok Video";
+            author = data.author.nickname;
+            avatar = data.author.avatar;
+            cover = data.cover;
+        } else {
+            // YouTube
+            videoUrl = data.url || data.link || data.download;
+            title = data.title;
+            author = "YouTube HD";
+            avatar = "https://cdn-icons-png.flaticon.com/512/1384/1384060.png"; // Generic YT Icon
+            cover = data.thumb || data.thumbnail;
+        }
+
+        // DOM Injection
+        document.getElementById('r-player').src = videoUrl;
+        document.getElementById('r-title').innerText = title.substring(0, 50) + (title.length>50?"...":"");
+        document.getElementById('r-author').innerText = author;
+        document.getElementById('r-avatar').src = avatar;
         
-        resultArea.innerHTML = `
-            <div class="result-card">
-                <div class="user-head" style="display:flex; align-items:center; gap:10px; margin-bottom:15px; text-align:left;">
-                    <img src="${data.author.avatar}" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--tt-primary);">
-                    <div>
-                        <h4 style="font-size:14px;">${data.author.nickname}</h4>
-                        <span style="font-size:11px; color:var(--text-muted);">@${data.author.username}</span>
-                    </div>
-                </div>
-                <video src="${videoUrl}" controls style="width:100%; border-radius:12px; max-height:300px; background:black; margin-bottom:15px;"></video>
-                <a href="${videoUrl}" target="_blank" class="dl-btn">
-                    <i class="fa-solid fa-download"></i> Download Video
-                </a>
-                <a href="${data.music.url}" target="_blank" class="dl-btn" style="background:rgba(255,255,255,0.1); color:white; margin-top:8px;">
-                    <i class="fa-solid fa-music"></i> Download Audio
-                </a>
-            </div>
-        `;
-        resultArea.style.display = 'block';
-        addToHistory({
-            img: data.cover,
-            title: data.desc || "TikTok Video",
-            mode: 'tiktok'
-        });
+        const dlBtn = document.getElementById('dl-main');
+        dlBtn.href = videoUrl;
+        
+        // Store title for copy button
+        dlBtn.dataset.title = title;
+
+        UI.result.style.display = 'block';
+        
+        // Scroll to result
+        UI.result.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    function renderYouTube(data) {
-        const resultArea = document.getElementById('result-area');
-        // Note: Structure depends on API response. Assuming typical XYRO structure.
-        // If API returns direct MP3 link in 'url' or 'link'
-        const title = data.title || "YouTube Audio";
-        const thumb = data.thumb || data.thumbnail || "https://i.imgur.com/vH4361y.png";
-        const dlLink = data.url || data.link || data.download;
+    // --- History System ---
 
-        resultArea.innerHTML = `
-            <div class="result-card">
-                <img src="${thumb}" class="res-thumb" alt="Cover">
-                <div class="res-info">
-                    <h3>${title}</h3>
-                    <p>High Quality MP3</p>
-                </div>
-                <audio controls src="${dlLink}" style="width:100%; margin-bottom:15px;"></audio>
-                <a href="${dlLink}" target="_blank" class="dl-btn">
-                    <i class="fa-solid fa-download"></i> Download MP3
-                </a>
-            </div>
-        `;
-        resultArea.style.display = 'block';
-        addToHistory({
-            img: thumb,
-            title: title,
-            mode: 'youtube'
-        });
-    }
-
-    // --- History & Utils ---
-
-    function addToHistory(item) {
-        let history = JSON.parse(localStorage.getItem('faz_multi_history')) || [];
-        // Avoid exact duplicates
-        if (history.length > 0 && history[0].title === item.title) return;
+    function saveHistory(data) {
+        let history = JSON.parse(localStorage.getItem('faz_plat_history')) || [];
         
+        let item = {};
+        if (MODE === 'tiktok') {
+            item = { thumb: data.cover, link: data.media[0].url, mode: 'tiktok' };
+        } else {
+            item = { thumb: data.thumb || data.thumbnail, link: data.url, mode: 'youtube' };
+        }
+
+        // Add to top, keep 10
         history.unshift(item);
-        if (history.length > 6) history.pop();
+        if(history.length > 10) history.pop();
         
-        localStorage.setItem('faz_multi_history', JSON.stringify(history));
-        loadHistory();
+        localStorage.setItem('faz_plat_history', JSON.stringify(history));
+        renderHistory();
     }
 
-    function loadHistory() {
+    function renderHistory() {
         const list = document.getElementById('history-list');
-        const history = JSON.parse(localStorage.getItem('faz_multi_history')) || [];
+        const history = JSON.parse(localStorage.getItem('faz_plat_history')) || [];
         
-        if (history.length === 0) return;
-        
+        if(history.length === 0) {
+            list.innerHTML = '<span style="color:#444; font-size:12px; padding:10px;">Recent downloads appear here</span>';
+            return;
+        }
+
         list.innerHTML = '';
         history.forEach(item => {
-            const badgeClass = item.mode === 'tiktok' ? 'badge-tt' : 'badge-yt';
-            const badgeText = item.mode === 'tiktok' ? 'TT' : 'YT';
-            
-            list.innerHTML += `
-                <div class="history-item">
-                    <img src="${item.img}" alt="thumb">
-                    <div class="h-info">
-                        <h4>${item.title.substring(0, 30)}...</h4>
-                        <span class="badge ${badgeClass}">${badgeText}</span>
-                    </div>
-                </div>
+            const icon = item.mode === 'tiktok' ? '<i class="fa-brands fa-tiktok"></i>' : '<i class="fa-brands fa-youtube"></i>';
+            const el = document.createElement('div');
+            el.className = 'h-item';
+            el.innerHTML = `
+                <img src="${item.thumb}" class="h-thumb">
+                <div class="h-icon">${icon}</div>
             `;
+            el.onclick = () => window.open(item.link, '_blank');
+            list.appendChild(el);
         });
     }
 
-    async function pasteFromClipboard() {
-        try {
-            const text = await navigator.clipboard.readText();
-            document.getElementById('urlInput').value = text;
-            showToast("Pasted!");
-        } catch (err) {
-            showToast("Allow clipboard access", "error");
-        }
+    // --- Utilities ---
+
+    function copyCaption() {
+        const title = document.getElementById('r-title').innerText;
+        navigator.clipboard.writeText(title);
+        showToast("Title Copied!");
     }
 
-    function showToast(msg, type='success') {
-        const toast = document.getElementById('toast');
-        const icon = toast.querySelector('i');
+    function showToast(msg, highlight = false) {
+        const t = document.getElementById('toast');
         document.getElementById('toast-msg').innerText = msg;
         
-        if(type === 'error') {
-            icon.className = "fa-solid fa-circle-exclamation";
-            icon.style.color = "#FF2E63";
-        } else {
-            icon.className = "fa-solid fa-circle-check";
-            icon.style.color = "var(--secondary)";
-        }
+        if(highlight) t.style.borderColor = "#fff";
+        else t.style.borderColor = "var(--theme-glow)";
 
-        toast.classList.add('active');
-        setTimeout(() => toast.classList.remove('active'), 3000);
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
     }
 
     // Init
-    loadHistory();
+    renderHistory();
 </script>
 
 </body>
